@@ -54,10 +54,15 @@ export function paymentFeeCoefficients(
   kind: ChannelKind,
   region: Region,
   p: PaymentAssumptions,
+  unitsPerOrder?: number,
 ): { rate: number; fixed: number } {
   const methods = paymentMixFor(kind, p);
   const totalMix = methods.reduce((s, m) => s + m.mixPercent, 0);
   if (totalMix <= 0) return { rate: 0, fixed: 0 };
+
+  // 消費端是一人一筆結帳,固定費就是每單位一次;企業端一張訂單涵蓋多個單位,
+  // 固定費(電匯手續費)必須攤提,否則低單價品項會被固定費壓成假性負毛利。
+  const perOrder = isConsumerChannel(kind) ? 1 : Math.max(1, unitsPerOrder ?? p.b2bUnitsPerOrder);
 
   let rate = 0;
   let fixed = 0;
@@ -65,7 +70,7 @@ export function paymentFeeCoefficients(
   for (const m of methods) {
     const w = m.mixPercent / totalMix;
     rate += w * m.rate;
-    fixed += w * m.fixedTWD;
+    fixed += (w * m.fixedTWD) / perOrder;
     if (m.rate > 0) cardShare += w;
   }
 
@@ -84,9 +89,10 @@ export function computePaymentFee(
   kind: ChannelKind,
   region: Region,
   p: PaymentAssumptions,
+  unitsPerOrder?: number,
 ): number {
   if (amountTWD <= 0) return 0;
-  const { rate, fixed } = paymentFeeCoefficients(kind, region, p);
+  const { rate, fixed } = paymentFeeCoefficients(kind, region, p, unitsPerOrder);
   return amountTWD * rate + fixed;
 }
 

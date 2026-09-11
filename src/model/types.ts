@@ -76,6 +76,12 @@ export interface PaymentAssumptions {
   consumer: PaymentMethod[];
   /** B2B 通路付款組合(電匯為主,費率低很多) */
   business: PaymentMethod[];
+  /**
+   * 一張 B2B 訂單涵蓋幾個單位(台數或席次×月數)。
+   * 電匯固定費是「每筆匯款」收的,不是每台收的 —— 通路一次訂 200 台,
+   * 那筆 300 元匯費要攤在 200 台上。少了這一項,單價低的品項會被固定費壓成負毛利。
+   */
+  b2bUnitsPerOrder: number;
   /** 跨境換匯價差 */
   fxSpread: number;
   /** 退款 / 拒付率(直接視為損失) */

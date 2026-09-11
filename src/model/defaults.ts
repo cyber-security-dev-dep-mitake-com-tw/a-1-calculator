@@ -52,6 +52,7 @@ export const DEFAULT_PAYMENT: PaymentAssumptions = {
     { id: 'wire', name: '電匯 / 月結', rate: 0.0015, fixedTWD: 300, mixPercent: 80 },
     { id: 'check', name: '支票 / 承兌', rate: 0, fixedTWD: 0, mixPercent: 20 },
   ],
+  b2bUnitsPerOrder: 200,
   fxSpread: 0.015,
   chargebackRate: 0.003,
 };

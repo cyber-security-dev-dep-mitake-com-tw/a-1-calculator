@@ -84,6 +84,24 @@ describe('金流固定費', () => {
     expect(business).toBeLessThan(consumer);
   });
 
+  it('B2B 電匯固定費須攤在整張訂單上,而非每台收一次', () => {
+    const tw = region('TW');
+    const a = clone();
+    // 一張訂單 1 台 vs 200 台:每台分攤到的固定費應差 200 倍
+    const perOne = computePaymentFee(1000, 'threeTier', tw, a.payment, 1);
+    const perMany = computePaymentFee(1000, 'threeTier', tw, a.payment, 200);
+    expect(perOne - perMany).toBeGreaterThan(200);
+  });
+
+  it('低單價訂閱不該被 B2B 固定費壓成負毛利', () => {
+    // 這是實際跑起來後才發現的缺陷:NT$300 電匯費若按「每席每月」收,
+    // 30 元的企業席次會出現 −1000% 毛利,那是模型假象而非定價問題。
+    const a = clone();
+    a.enterprisePerSeatMonthTWD = 300;
+    const gp = enterpriseSeatEconomics(a, { channelKind: 'threeTier' }).grossProfitTWD;
+    expect(gp).toBeGreaterThan(0);
+  });
+
   it('跨境會加上換匯價差,費用高於本國', () => {
     const domestic = computePaymentFee(2000, 'd2c', region('TW'), A.payment);
     const overseas = computePaymentFee(2000, 'd2c', region('JP'), A.payment);
