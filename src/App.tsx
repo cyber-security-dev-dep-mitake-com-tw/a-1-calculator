@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AssumptionsPanel } from './components/AssumptionsPanel';
+import { ArchitecturePage } from './pages/ArchitecturePage';
 import { ChannelPage } from './pages/ChannelPage';
 import { ForecastPage } from './pages/ForecastPage';
 import { MarketsPage } from './pages/MarketsPage';
@@ -7,13 +8,14 @@ import { PricingPage } from './pages/PricingPage';
 import { useAssumptions } from './state';
 import type { ChannelKind } from './model/types';
 
-type Tab = 'pricing' | 'channel' | 'markets' | 'forecast';
+type Tab = 'pricing' | 'channel' | 'markets' | 'forecast' | 'architecture';
 
 const TABS: Array<{ id: Tab; label: string; hint: string }> = [
   { id: 'pricing', label: '定價決策', hint: 'MSRP 該訂多少' },
   { id: 'channel', label: '通路折扣底線', hint: '最多能讓幾 %' },
   { id: 'markets', label: '市場進入比較', hint: '先進哪個國家' },
   { id: 'forecast', label: '3 年財務預測', hint: '現金夠不夠' },
+  { id: 'architecture', label: '訂閱架構設計', hint: '定價結構從哪來' },
 ];
 
 export default function App() {
@@ -98,7 +100,7 @@ export default function App() {
       </header>
 
       <main className="mx-auto flex max-w-[1600px] gap-4 px-4 py-4">
-        {panelOpen && (
+        {panelOpen && tab !== 'architecture' && (
           <aside className="w-72 shrink-0">
             <div className="sticky top-4 space-y-3">
               <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
@@ -148,6 +150,7 @@ export default function App() {
           {tab === 'channel' && <ChannelPage api={api} />}
           {tab === 'markets' && <MarketsPage api={api} />}
           {tab === 'forecast' && <ForecastPage api={api} />}
+          {tab === 'architecture' && <ArchitecturePage />}
 
           <p className="mt-6 text-xs text-slate-400">
             訂閱價格預設值取自 A1 Portal 現行設定(299 / 799 / 2,499,企業版 NT$1/席/天)。

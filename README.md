@@ -8,12 +8,14 @@
 | **通路折扣底線** | 最多能讓代理商幾 % |
 | **市場進入比較** | 先進哪個國家 |
 | **3 年財務預測** | 現金夠不夠 |
+| **訂閱架構設計** | 這些定價結構從哪來 |
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
-npm run test     # 模型單元測試
+npm run dev       # http://localhost:5173
+npm run test      # 模型單元測試
 npm run build
+npm run sync:doc  # 從 console repo 重新同步架構文件
 ```
 
 ## 為什麼計算與畫面要分開
@@ -64,4 +66,10 @@ src/components/ AssumptionsPanel(四頁共用同一份 state)、Waterfall、ui
 src/state.ts    localStorage 持久化 + 情境存讀
 ```
 
-相關設計文件:`console/docs/subscription/architecture.md`(訂閱 × 金鑰 × 簽章 × 硬體信任根)。
+## 訂閱架構設計頁
+
+第五個分頁直接內嵌 `console/docs/subscription/architecture.md`(訂閱 × 金鑰 × 簽章 × 硬體信任根),
+用 `react-markdown` + `remark-gfm` 渲染,表格與 ASCII 架構圖都保留。
+
+原檔在另一個 repo,build 時無法直接參照,所以 `src/content/architecture.md` 是**副本**。
+原檔更新後跑 `npm run sync:doc` 重新同步(腳本假設 console repo 在 `../../Git/console`)。
